@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  # AI Quizzer API service
+  api:
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+      - mongo
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/ai_quizzer
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=your-secret-key-change-in-production
+      - DB_TYPE=mongo # Change to 'sql' to use PostgreSQL
+      - SQL_URI=postgresql://postgres:postgres@postgres:5432/ai_quizzer
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_SECURE=${EMAIL_SECURE}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASS=${EMAIL_PASS}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+
+  # MongoDB service
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  # PostgreSQL service (optional, if using SQL)
+  postgres:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ai_quizzer
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d # Automatically runs SQL files on startup
+
+  # Redis service for caching
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mongo_data:
+  postgres_data:
+  redis_data:

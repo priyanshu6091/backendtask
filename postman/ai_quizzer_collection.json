@@ -1,0 +1,368 @@
+{
+  "info": {
+    "name": "AI Quizzer API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"testpass\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.environment.set('auth_token', jsonData.token);",
+                  "}"
+
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Quiz Operations",
+      "item": [
+        {
+          "name": "Generate Quiz",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/quiz/generate",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"grade\": 5,\n    \"subject\": \"Mathematics\",\n    \"totalQuestions\": 10,\n    \"maxScore\": 10,\n    \"difficulty\": \"MEDIUM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.quiz && jsonData.quiz.id) {",
+                  "    pm.environment.set('quiz_id', jsonData.quiz.id);",
+                  "    pm.environment.set('quizData', JSON.stringify(jsonData.quiz));",
+                  "    console.log('Quiz data stored:', jsonData.quiz);",
+                  "}"
+
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit Quiz",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/quiz/{{quiz_id}}/submit",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"responses\": [\n        {\n            \"questionId\": \"{{question_id}}\",\n            \"userResponse\": \"A\"\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const quizData = pm.environment.get('quizData');",
+                  "if (!quizData) {",
+                  "    console.error('Please generate a quiz first');",
+                  "    return;",
+                  "}",
+                  "try {",
+                  "    const quiz = JSON.parse(quizData);",
+                  "    const responseBody = {",
+                  "        responses: quiz.questions.map(q => ({",
+                  "            questionId: q.questionId,",
+                  "            userResponse: ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)]",
+                  "        }))",
+                  "    };",
+                  "    pm.request.body.update(JSON.stringify(responseBody, null, 2));",
+                  "} catch (error) {",
+                  "    console.error('Error preparing request:', error);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Quiz History",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3000/quiz/history",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "query": [
+              {
+                "key": "grade",
+                "value": "5"
+              },
+              {
+                "key": "subject",
+                "value": "Mathematics"
+              },
+              {
+                "key": "from",
+                "value": "2024-01-01"
+              },
+              {
+                "key": "to",
+                "value": "2024-12-31"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Question Hint",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/quiz/hint",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"question\": \"What is the formula for calculating the area of a circle?\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Retry Quiz",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/quiz/{{quiz_id}}/retry",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.quizRetry) {",
+                  "    pm.environment.set('quizData', JSON.stringify(jsonData.quizRetry));",
+                  "    console.log('Quiz data for retry stored');",
+                  "}"
+
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Quiz Submissions",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3000/quiz/{{quiz_id}}/submissions",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ]
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.submissions && jsonData.submissions.length > 0) {",
+                  "    pm.environment.set('submission_id', jsonData.submissions[0].submissionId);",
+                  "    console.log('First submission ID stored:', jsonData.submissions[0].submissionId);",
+                  "}"
+
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "View Specific Submission",
+          "request": {
+            "method": "GET",
+            "url": "http://localhost:3000/quiz/{{quiz_id}}/submissions/{{submission_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Submit Quiz with Email Notification",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/quiz/{{quiz_id}}/submit",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"responses\": [],\n    \"sendEmail\": true,\n    \"email\": \"galanimeghji@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const quizData = pm.environment.get('quizData');",
+                  "if (!quizData) {",
+                  "    console.error('Please generate a quiz first');",
+                  "    return;",
+                  "}",
+                  "try {",
+                  "    const quiz = JSON.parse(quizData);",
+                  "    const requestBody = {",
+                  "        responses: quiz.questions.map(q => ({",
+                  "            questionId: q.questionId,",
+                  "            userResponse: ['A', 'B', 'C', 'D'][Math.floor(Math.random() * 4)]",
+                  "        })),",
+                  "        sendEmail: true,",
+                  "        email: \"galanimeghji@gmail.com\"",
+                  "    };",
+                  "    pm.request.body.update(JSON.stringify(requestBody, null, 2));",
+                  "} catch (error) {",
+                  "    console.error('Error preparing request:', error);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Send Email for Past Submission",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/quiz/{{quiz_id}}/email-results",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"galanimeghji@gmail.com\",\n    \"submissionIndex\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "auth_token",
+      "value": "your_jwt_token_here"
+    },
+    {
+      "key": "quiz_id",
+      "value": "your_quiz_id_here"
+    },
+    {
+      "key": "submission_id",
+      "value": "0"
+    }
+  ]
+}
