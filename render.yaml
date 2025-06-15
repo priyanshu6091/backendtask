@@ -3,8 +3,9 @@ services:
   - type: web
     name: ai-quizzer-api
     env: node
+    runtime: node
     buildCommand: npm install
-    startCommand: node src/index.js
+    startCommand: npm start
     envVars:
       - key: DB_TYPE
         value: mongo

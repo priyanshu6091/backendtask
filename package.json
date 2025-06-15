@@ -1,13 +1,13 @@
-{
-  "name": "ai-quizzer",
+{  "name": "ai-quizzer",
   "version": "1.0.0",
-  "main": "index.js",  "scripts": {
+  "main": "src/index.js",  "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "docker:build": "docker-compose build",
     "docker:start": "docker-compose up -d",
     "docker:stop": "docker-compose down",
-    "render-postbuild": "npm install"
+    "render-postbuild": "npm install",
+    "render-start": "node src/index.js"
   },
   "dependencies": {
     "express": "^4.18.2",
