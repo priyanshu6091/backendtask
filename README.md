@@ -2,6 +2,20 @@
 
 A backend service for an AI-powered quiz application that generates quizzes, evaluates responses, provides hints, and allows retrying quizzes.
 
+## Quick Start
+
+### Testing the Deployed API
+The API is already deployed and ready to use:
+1. Import the Postman collection from `postman/ai_quizzer_collection_deployed.json`
+2. Use the deployed API at: [https://backendtask-occz.onrender.com](https://backendtask-occz.onrender.com)
+3. Start with the Login endpoint to get an auth token
+
+### Running Locally
+1. Install dependencies: `npm install`
+2. Configure .env file (see Setup Instructions)
+3. Start the server: `npm start`
+4. Test endpoints using the included Postman collection
+
 ## Features
 
 - **Authentication** - Mock authentication with JWT
@@ -18,18 +32,12 @@ A backend service for an AI-powered quiz application that generates quizzes, eva
 
 ### Local Development Setup
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd pplbackend
-   ```
-
-2. **Install dependencies**
+1. **Install dependencies**
    ```bash
    npm install
    ```
 
-3. **Set up environment variables**
+2. **Set up environment variables**
    
    Create a `.env` file in the root directory (use the provided `.env.example` as a template):
    ```env
@@ -56,7 +64,7 @@ A backend service for an AI-powered quiz application that generates quizzes, eva
    EMAIL_FROM="AI Quizzer <your-email@gmail.com>"
    ```
 
-4. **Database Setup**
+3. **Database Setup**
 
    **For MongoDB (Default):**
    - Use MongoDB Atlas or run MongoDB locally
@@ -75,7 +83,7 @@ A backend service for an AI-powered quiz application that generates quizzes, eva
      ```
    - Set `DB_TYPE=sql` and `SQL_URI` in your `.env` file
 
-5. **Start Redis server (optional)**
+4. **Start Redis server (optional)**
    
    The system will automatically fall back to in-memory cache if Redis is unavailable:
    ```bash
@@ -87,7 +95,7 @@ A backend service for an AI-powered quiz application that generates quizzes, eva
    redis-server
    ```
 
-6. **Run the server**
+5. **Run the server**
    ```bash
    npm run dev  # Development mode with nodemon
    npm start    # Production mode
@@ -95,7 +103,7 @@ A backend service for an AI-powered quiz application that generates quizzes, eva
 
 ### Docker Setup
 
-For easy deployment with all dependencies included:
+For easy setup with all dependencies included:
 
 1. **Build and start the Docker containers**
    ```bash
@@ -130,26 +138,14 @@ DB_TYPE=sql    # For PostgreSQL
 
 The SQL schema is designed to closely match the MongoDB structure, providing the same functionality with either database.
 
-## Project Structure
+## Project Files for Testing
 
-```
-├── postman/                    # Postman collection for API testing
-├── src/
-│   ├── config/                 # Configuration files
-│   ├── database/               # Database connection and adapter
-│   ├── middleware/             # Express middleware including authentication
-│   ├── models/                 # Data models (Mongoose schemas)
-│   ├── utils/                  # Utility functions (cache, email, AI integration)
-│   └── index.js                # Main application entry point
-├── sql/                        # SQL database schema and migrations
-│   ├── 00_schema.sql           # Main SQL schema creation
-│   ├── 01_seed.sql             # Sample data for testing
-│   └── README.sql              # Documentation for SQL implementation
-├── .env.example                # Example environment variables
-├── docker-compose.yml          # Docker Compose configuration
-├── Dockerfile                  # Docker configuration
-└── README.md                   # Project documentation
-```
+- **`postman/ai_quizzer_collection.json`**: Postman collection for local testing
+- **`postman/ai_quizzer_collection_deployed.json`**: Postman collection for testing the deployed API
+- **`postman/deployed_environment.json`**: Postman environment for deployed testing
+- **`.env.example`**: Example environment variables for local setup
+- **`sql/00_schema.sql`**: SQL schema if using PostgreSQL
+- **`Dockerfile` & `docker-compose.yml`**: Docker configuration files
 
 ## API Documentation
 
@@ -260,7 +256,17 @@ The SQL schema is designed to closely match the MongoDB structure, providing the
 
 ## Postman Collection
 
-A Postman collection is included at `postman/ai_quizzer_collection.json` for easy API testing.
+### Local Testing
+A Postman collection is included at `postman/ai_quizzer_collection.json` for testing the API locally.
+
+### Deployed API Testing
+To test the deployed API:
+1. Import `postman/ai_quizzer_collection_deployed.json` in Postman
+2. Import `postman/deployed_environment.json` as an environment
+3. Select the "AI Quizzer Deployed Environment"
+4. The API is deployed at: [https://backendtask-occz.onrender.com](https://backendtask-occz.onrender.com)
+
+The deployed API has the same endpoints and functionality as the local version.
 
 ## Technology Stack
 
@@ -270,7 +276,3 @@ A Postman collection is included at `postman/ai_quizzer_collection.json` for eas
 - Groq AI API for quiz generation
 - JWT for authentication
 - Nodemailer for email notifications
-
-## License
-
-MIT

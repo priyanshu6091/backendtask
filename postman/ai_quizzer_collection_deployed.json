@@ -1,0 +1,319 @@
+{
+  "info": {
+    "name": "AI Quizzer API (Deployed)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "https://backendtask-occz.onrender.com/auth/login",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"testpass\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.token) {",
+                  "    pm.environment.set('auth_token', jsonData.token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Quiz Operations",
+      "item": [
+        {
+          "name": "Generate Quiz",
+          "request": {
+            "method": "POST",
+            "url": "https://backendtask-occz.onrender.com/quiz/generate",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"grade\": 10,\n    \"subject\": \"Mathematics\",\n    \"totalQuestions\": 5,\n    \"maxScore\": 10,\n    \"difficulty\": \"MEDIUM\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.quiz && jsonData.quiz.id) {",
+                  "    pm.environment.set('quiz_id', jsonData.quiz.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Submit Quiz",
+          "request": {
+            "method": "POST",
+            "url": "https://backendtask-occz.onrender.com/quiz/{{quiz_id}}/submit",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"responses\": [\n        {\n            \"questionId\": \"questionId1\",\n            \"userResponse\": \"The answer\"\n        },\n        {\n            \"questionId\": \"questionId2\",\n            \"userResponse\": \"Another answer\"\n        }\n    ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.submissions && jsonData.submissions.length > 0) {",
+                  "    pm.environment.set('submission_id', jsonData.submissions[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Quiz History",
+          "request": {
+            "method": "GET",
+            "url": "https://backendtask-occz.onrender.com/quiz/history",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "query": [
+              {
+                "key": "grade",
+                "value": "10",
+                "disabled": true
+              },
+              {
+                "key": "subject",
+                "value": "Mathematics",
+                "disabled": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Hint",
+          "request": {
+            "method": "GET",
+            "url": "https://backendtask-occz.onrender.com/quiz/hint",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "query": [
+              {
+                "key": "quizId",
+                "value": "{{quiz_id}}"
+              },
+              {
+                "key": "questionId",
+                "value": "questionId1"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Retry Quiz",
+          "request": {
+            "method": "POST",
+            "url": "https://backendtask-occz.onrender.com/quiz/{{quiz_id}}/retry",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "List Submissions",
+          "request": {
+            "method": "GET",
+            "url": "https://backendtask-occz.onrender.com/quiz/{{quiz_id}}/submissions",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Get Submission Details",
+          "request": {
+            "method": "GET",
+            "url": "https://backendtask-occz.onrender.com/quiz/{{quiz_id}}/submissions/{{submission_id}}",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Submit Quiz with Email Notification",
+          "request": {
+            "method": "POST",
+            "url": "https://backendtask-occz.onrender.com/quiz/{{quiz_id}}/submit",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"responses\": [],\n    \"sendEmail\": true,\n    \"email\": \"galanimeghji@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Generate dynamic responses based on the quiz questions",
+                  "// Note: In a real test, you would need to first retrieve the quiz questions",
+                  "// and then dynamically generate responses based on them.",
+                  "",
+                  "// Example of how you might set up such dynamic responses:",
+                  "const sampleResponses = [",
+                  "    {",
+                  "        questionId: \"questionId1\", ",
+                  "        userResponse: \"Sample answer 1\"",
+                  "    },",
+                  "    {",
+                  "        questionId: \"questionId2\",",
+                  "        userResponse: \"Sample answer 2\"",
+                  "    }",
+                  "];",
+                  "",
+                  "// You could then set these in the request body",
+                  "// Note: This is just for illustration - the actual implementation would",
+                  "// depend on your specific quiz structure and testing needs.",
+                  "// pm.request.body.update({",
+                  "//     mode: 'raw',",
+                  "//     raw: JSON.stringify({",
+                  "//         responses: sampleResponses,",
+                  "//         sendEmail: true,",
+                  "//         email: \"galanimeghji@gmail.com\"",
+                  "//     })",
+                  "// });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Send Email for Past Submission",
+          "request": {
+            "method": "POST",
+            "url": "https://backendtask-occz.onrender.com/quiz/{{quiz_id}}/email-results",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"galanimeghji@gmail.com\",\n    \"submissionIndex\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

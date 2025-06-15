@@ -1,0 +1,27 @@
+{
+  "id": "deployed-environment",
+  "name": "AI Quizzer Deployed Environment",
+  "values": [
+    {
+      "key": "api_url",
+      "value": "https://backendtask-occz.onrender.com",
+      "enabled": true
+    },
+    {
+      "key": "auth_token",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "quiz_id",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "submission_id",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
