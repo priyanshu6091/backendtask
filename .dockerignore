@@ -1,0 +1,27 @@
+# Exclude node modules
+node_modules
+npm-debug.log
+
+# Exclude development and git files
+.git
+.gitignore
+.github
+.vscode
+*.md
+!README.md
+
+# Exclude test files
+test
+tests
+coverage
+.nyc_output
+
+# Exclude environment files
+.env
+.env.*
+!.env.example
+
+# Exclude Docker files (they're not needed inside the container)
+Dockerfile
+docker-compose.yml
+.dockerignore

@@ -1,0 +1,45 @@
+{
+  "name": "AI Quizzer API",
+  "description": "A backend service for an AI-powered quiz application",
+  "repository": "https://github.com/priyanshu6091/backendtask",
+  "keywords": ["node", "express", "mongodb", "ai", "quiz"],
+  "env": {
+    "DB_TYPE": {
+      "description": "Database type (mongo or sql)",
+      "value": "mongo"
+    },
+    "MONGO_URI": {
+      "description": "MongoDB connection string"
+    },
+    "JWT_SECRET": {
+      "description": "Secret key for JWT token generation",
+      "generator": "secret"
+    },
+    "GROQ_API_KEY": {
+      "description": "API key for Groq AI services"
+    },
+    "EMAIL_HOST": {
+      "description": "SMTP host for email notifications",
+      "value": "smtp.gmail.com"
+    },
+    "EMAIL_PORT": {
+      "description": "SMTP port",
+      "value": "587"
+    },
+    "EMAIL_USER": {
+      "description": "Email username/address"
+    },
+    "EMAIL_PASS": {
+      "description": "Email password/app password"
+    },
+    "EMAIL_FROM": {
+      "description": "Sender email address with display name",
+      "value": "AI Quizzer <noreply@example.com>"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
